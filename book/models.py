@@ -30,3 +30,18 @@ class Book(models.Model):
     def __str__(self):
         # 管理画面でのこのデータの表示名を title に設定
         return self.title
+
+
+class BookStock(models.Model):
+    # 本の在庫モデル=本1種類ごとに一つのデータが作成される(1対1)
+    class Meta:
+        # テーブル名を book_stock に設定
+        db_table = "book_stock"
+        # 管理画面での表示名を 本の在庫 に設定
+        verbose_name = verbose_name_plural = "本の在庫"
+
+    # Bookモデルとの1対1のリレーションを作成【カラム名：本　親テーブル(Bookモデル)の該当データが削除されたときに、このデータも削除】
+    book = models.OneToOneField(Book, verbose_name="本", on_delete=models.CASCADE)
+
+    # 二つ目のフィールドを整数型(int型)で作成【カラム名：在庫数　デフォルトの値は0】
+    quantity = models.IntegerField(verbose_name="在庫数", default=0)
