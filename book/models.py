@@ -6,8 +6,9 @@ from django.db import models
 
 
 class Book(models.Model):
+    # 本モデル
     class Meta:
-        db_name = "book"
+        db_table = "book"
         ordering = ["created_at"]
         verbose_name = verbose_name_plural = "本"
 
