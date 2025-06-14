@@ -23,6 +23,22 @@ class Publisher(models.Model):
     created_at = models.DateTimeField(verbose_name="登録日時", auto_now_add=True)
 
 
+class Author(models.Model):
+    # 著者モデル=複数の著者に対して複数の本がありうる(多対多)
+    class Meta:
+        db_table = "author"
+        verbose_name = verbose_name_plural = "著者"
+
+    # このテーブルの主キーを設定【デフォルト：uuid　管理画面での値の変更ができなくなる】
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # 二つ目のフィールドを文字列型で作成【カラム名：著者名　格納できる最大文字列：20】
+    name = models.CharField(verbose_name="著者名", max_length=20)
+
+    # 三つ目のフィールドを日時型(datetime型)で作成【カラム名：登録日時　データが作成されたときの日時が自動入力】
+    created_at = models.DateTimeField(verbose_name="登録日時", auto_now_add=True)
+
+
 class Book(models.Model):
     # 本モデル
     class Meta:
@@ -43,7 +59,14 @@ class Book(models.Model):
     price = models.IntegerField(verbose_name="価格", null=True, blank=True)
 
     # Publisherモデルとの多対一のリレーションを作成【カラム名：出版社　親テーブル(Publisherモデル)の該当データが削除されたときに、このデータも削除】
-    publisher = models.ForeignKey(Publisher, verbose_name="出版社", on_delete=True)
+    publisher = models.ForeignKey(
+        Publisher, verbose_name="出版社", null=True, on_delete=models.CASCADE
+    )
+
+    # Authorモデルとの多対多のリレーションを作成【カラム名：著者　親テーブル(Publisherモデル)の該当データが削除されたときに、このデータも削除】
+    authors = models.ForeignKey(
+        Author, null=True, verbose_name="著者", on_delete=models.CASCADE
+    )
 
     # 五つ目のフィールドを日時型(datetime型)で作成【カラム名：登録日時　データが作成されたときの日時が自動入力】
     created_at = models.DateTimeField(verbose_name="登録日時", auto_now_add=True)
