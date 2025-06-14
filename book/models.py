@@ -8,8 +8,11 @@ from django.db import models
 class Book(models.Model):
     # 本モデル
     class Meta:
+        # テーブル名を book に設定
         db_table = "book"
+        # created_at の順に並び替え
         ordering = ["created_at"]
+        # 管理画面でのテーブルの表示名を 本 に設定
         verbose_name = verbose_name_plural = "本"
 
     # このテーブルの主キーを設定【デフォルト：uuid　管理画面での値の変更ができなくなる】
@@ -25,5 +28,5 @@ class Book(models.Model):
     created_at = models.DateTimeField(verbose_name="登録日時", auto_now_add=True)
 
     def __str__(self):
-        # 管理画面でのこのデータの表示名を title にする
+        # 管理画面でのこのデータの表示名を title に設定
         return self.title
