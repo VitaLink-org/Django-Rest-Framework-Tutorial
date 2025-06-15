@@ -1,5 +1,5 @@
 from django_filters import rest_framework as filters
-from rest_framework import generics, status, views
+from rest_framework import generics, status, views, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -153,3 +153,10 @@ class BookUpdateGenericAPIView(generics.UpdateAPIView):
 class BookDestroyGenericAPIView(generics.DestroyAPIView):
     # 本モデルの削除APIクラス
     queryset = Book.objects.all()
+
+
+class BookViewSet(viewsets.ViewSet):
+    # 本モデルのCRUD用APIクラス
+
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
