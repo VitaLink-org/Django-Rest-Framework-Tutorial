@@ -1,5 +1,5 @@
 from django_filters import rest_framework as filters
-from rest_framework import status, views
+from rest_framework import generics, status, views
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -42,14 +42,14 @@ class BookListAPIView(views.APIView):
         # 本モデルの取得(一覧)APIに対応するハンドラメソッド
 
         # モデルオブジェクトをクエリ文字列を使ってフィルタリングした結果を取得
-        filter_set = BookFilter(request.query_params, queryset=Book.objects.all())
+        filterset = BookFilter(request.query_params, queryset=Book.objects.all())
 
-        if not filter_set.is_valid():
+        if not filterset.is_valid():
             # クエリ文字列がNGの場合は400エラー
-            raise ValidationError(filter_set.errors)
+            raise ValidationError(filterset.errors)
 
         # シリアライザオブジェクトを作成
-        serializer = BookSerializer(instance=filter_set.qs, many=True)
+        serializer = BookSerializer(instance=filterset.qs, many=True)
 
         # レスポンスオブジェクトを作成して返す
         return Response(serializer.data)
@@ -122,3 +122,34 @@ class BookDestroyAPIView(views.APIView):
 
         # レスポンスオブジェクトを作成して返す
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class BookCreateGenericAPIView(generics.CreateAPIView):
+    # 本モデルの登録APIクラス
+
+    serializer_class = BookSerializer
+
+
+class BookListGenericAPIView(generics.ListAPIView):
+    # 本モデルの取得(一覧)APIクラス
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_fields = "__all__"
+
+
+class BookRetrieveGenericAPIView(generics.RetrieveAPIView):
+    # 本モデルの取得(詳細)APIクラス
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+
+class BookUpdateGenericAPIView(generics.UpdateAPIView):
+    # 本モデルの更新・一部更新APIクラス
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+
+class BookDestroyGenericAPIView(generics.DestroyAPIView):
+    # 本モデルの削除APIクラス
+    queryset = Book.objects.all()
