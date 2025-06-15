@@ -124,6 +124,84 @@ class BookDestroyAPIView(views.APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class BookListCreateAPIView(views.APIView):
+
+    def get(self, request):
+        # 本モデルの取得(一覧)APIに対応するハンドラメソッド
+
+        # モデルオブジェクトをクエリ文字列を使ってフィルタリングした結果を取得
+        filterset = BookFilter(request.query_params, queryset=Book.objects.all())
+
+        if not filterset.is_valid():
+            # クエリ文字列がNGの場合は400エラー
+            raise ValidationError(filterset.errors)
+
+        # シリアライザオブジェクトを作成
+        serializer = BookSerializer(instance=filterset.qs, many=True)
+
+        # レスポンスオブジェクトを作成して返す
+        return Response(serializer.data)
+
+    def post(self, request):
+        # 本モデルの登録APIに対応するハンドラメソッド
+
+        # シリアライザオブジェクトを作成
+        serializer = BookSerializer(data=request.data)
+
+        # バリデーションを実行
+        serializer.is_valid(raise_exception=True)
+
+        # モデルオブジェクトを登録
+        serializer.save()
+
+        # レスポンスオブジェクトを作成して返す
+        return Response(serializer.data, status.HTTP_201_CREATED)
+
+
+class BookRetrieveUpdateDestroyAPIView(views.APIView):
+    def get(self, request, pk):
+        # 本モデルの取得(詳細)APIに対応するハンドラメソッド
+
+        # モデルオブジェクトを取得
+        book = get_object_or_404(Book, pk=pk)
+
+        # シリアライザオブジェクトを作成
+        serializer = BookSerializer(instance=book)
+
+        # レスポンスオブジェクトを作成して返す
+        return Response(serializer.data)
+
+    def patch(self, request, pk):
+        # 本モデルの一部更新APIに対応するハンドラメソッド
+
+        # モデルオブジェクトを取得
+        book = get_object_or_404(Book, pk=pk)
+
+        # シリアライザオブジェクトを作成
+        serializer = BookSerializer(instance=book, data=request.data, partial=True)
+
+        # バリデーションを実行
+        serializer.is_valid(raise_exception=True)
+
+        # モデルオブジェクトを一部更新
+        serializer.save()
+
+        # レスポンスオブジェクトを作成して返す
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        # 本モデルの削除APIに対応するハンドラメソッド
+
+        # モデルオブジェクトを取得
+        book = get_object_or_404(Book, pk=pk)
+
+        # モデルオブジェクトの削除
+        book.delete()
+
+        # レスポンスオブジェクトを作成して返す
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class BookCreateGenericAPIView(generics.CreateAPIView):
     # 本モデルの登録APIクラス
 
@@ -153,6 +231,16 @@ class BookUpdateGenericAPIView(generics.UpdateAPIView):
 class BookDestroyGenericAPIView(generics.DestroyAPIView):
     # 本モデルの削除APIクラス
     queryset = Book.objects.all()
+
+
+class BookListCreateGenericAPIView(generics.ListCreateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+
+class BookRetrieveUpdateDestroyGenericAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
 
 
 class BookViewSet(viewsets.ViewSet):
