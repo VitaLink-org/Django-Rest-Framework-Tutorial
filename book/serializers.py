@@ -5,7 +5,7 @@ from rest_framework.validators import UniqueTogetherValidator
 from .models import Book
 
 
-class BookSerializers(serializers.ModelSerializer):
+class BookSerializer(serializers.ModelSerializer):
     # 本モデル用のシリアライザ
     class Meta:
         # 対象のモデルを指定
@@ -52,4 +52,4 @@ class BookListSerializers(serializers.ListSerializer):
     # 複数の本モデルを扱うためのシリアライザ
 
     # 対象のシリアライザを指定　クラスではなくオブジェクトを指定
-    child = BookSerializers()
+    child = BookSerializer()
