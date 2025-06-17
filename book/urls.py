@@ -13,7 +13,7 @@ router = DefaultRouter()
 router.register("", BookViewSet)
 
 urlpatterns = [
-    path("/", BookListCreateAPIView.as_view()),
+    path("", BookListCreateAPIView.as_view()),
     path("<int:pk>/", BookRetrieveUpdateDestroyAPIView.as_view()),
     path("generic/", BookListCreateGenericAPIView.as_view()),
     path("generic/<int:pk>/", BookRetrieveUpdateDestroyGenericAPIView.as_view()),
